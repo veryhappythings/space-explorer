@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Asteroids</title>
+	<script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+
+function preload() {
+  game.load.image('background', 'img/debug-grid-1920x1920.png');
+  game.load.image('ship', 'img/ship.png');
+  game.load.image('asteroid', 'img/asteroid80.png');
+}
+
+function create() {
+  chunk_location = new Phaser.Point(0, 0);
+  chunk_background = game.add.tileSprite(chunk_location.x, chunk_location.y, 1920, 1920, 'background');
+
+  game.physics.startSystem(Phaser.Physics.P2);
+
+  player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'ship');
+  player.scale.setTo(0.4, 0.4);
+  player.anchor.setTo(0.5, 0.5);
+  game.physics.arcade.enable(player);
+
+  asteroid = game.add.sprite(500, 300, 'asteroid');
+  asteroid.anchor.x = 0.5;
+  asteroid.anchor.y = 0.5;
+  game.physics.arcade.enable(asteroid);
+  asteroid.body.bounce.x = 0.5;
+  asteroid.body.bounce.y = 0.5;
+  asteroid.body.drag.set(100);
+
+  // Hand rolled physics allows us to move the world instead of the player
+  dampening = 0.95;
+  player_acceleration = new Phaser.Point(0, 0);
+  player_velocity = new Phaser.Point(0, 0);
+  player_previous_location = new Phaser.Point(0, 0);
+
+  cursors = game.input.keyboard.createCursorKeys();
+
+  game.camera.follow(player);
+}
+
+function collisionHandler(first, second) {
+  console.log('1st', first.body.deltaX(), first.body.deltaY());
+  console.log('2nd', second.body.deltaX(), second.body.deltaY());
+  // Not sure why these aren't separating. Think it might be because they're not moving?
+  // deltaX being 0 all the time?
+  // https://github.com/photonstorm/phaser/blob/v2.4.4/src/physics/arcade/World.js#L375
+  console.log('intersect', game.physics.arcade.intersects(first.body, second.body));
+  console.log('x', game.physics.arcade.separateX(first.body, second.body, false));
+  console.log('y', game.physics.arcade.separateY(first.body, second.body, false));
+  //result = game.physics.arcade.separate(first.body, second.body, null, null, false);
+  //result = game.physics.arcade.collideSpriteVsSprite(first, second, null, null, null, false);
+  //console.log('separation result', result);
+}
+function update() {
+  // Collision detection is dependant on deltaX and deltaY, which require the
+  // player to be "moving". In our version of space, the player isn't. Fake it
+  // for the purposes of detection, and then put it back.
+
+  player.body.velocity.x = player_velocity.x;
+  player.body.velocity.y = player_velocity.y;
+  var prev_x = player.body.prev.x;
+  var prev_y = player.body.prev.y;
+  player.body.prev.x = player_previous_location.x;
+  player.body.prev.y = player_previous_location.y;
+  game.physics.arcade.collide(player, asteroid); //, collisionHandler);
+  player.body.velocity.x = 0;
+  player.body.velocity.y = 0;
+  player.body.prev.x = prev_x;
+  player.body.prev.y = prev_y;
+
+  player_previous_location.x = player.x;
+  player_previous_location.y = player.y;
+
+  if (cursors.left.isDown) {
+      player.rotation -= 0.1;
+  }
+  else if (cursors.right.isDown) {
+      player.rotation += 0.1;
+  }
+  if (cursors.up.isDown) {
+    game.physics.arcade.accelerationFromRotation(player.rotation - Math.PI/2, 20, player_acceleration);
+  }
+  else {
+    player_acceleration.set(0);
+  }
+
+  player_velocity.x += player_acceleration.x;
+  player_velocity.y += player_acceleration.y;
+  // Move the chunk by the velocity
+  var player_movement = new Phaser.Point(
+    player_velocity.x * this.game.time.physicsElapsed,
+    player_velocity.y * this.game.time.physicsElapsed
+  );
+  chunk_location.x -= player_movement.x;
+  chunk_location.y -= player_movement.y
+  // Move everything in the chunk relative to the chunk
+  chunk_background.x = chunk_location.x;
+  chunk_background.y = chunk_location.y;
+  asteroid.x -= player_movement.x;
+  asteroid.y -= player_movement.y;
+  asteroid.body.updateBounds();
+
+  // Slow the player down
+  player_velocity.x *= dampening;
+  player_velocity.y *= dampening;
+}
+
+function render() {
+  game.debug.spriteInfo(player, 32, 32);
+  game.debug.spriteInfo(asteroid, 400, 400);
+}
+
+</script>
+
+</body>
+</html>

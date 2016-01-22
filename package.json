@@ -1,0 +1,14 @@
+{
+  "name": "space-explorer",
+  "version": "1.0.0",
+  "description": "space-explorer",
+  "scripts": {
+  },
+  "author": "Mac Chapman",
+  "license": "MIT",
+  "repository": "",
+  "dependencies": {
+    "browser-sync": "^2.7.1",
+    "gulp": "^3.8.11"
+  }
+}
