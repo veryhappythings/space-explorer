@@ -16,7 +16,7 @@ Chunk = function(game, x, y) {
   );
 };
 
-Chunk.WIDTH = 1000;
+Chunk.WIDTH = 500;
 
 Chunk.prototype = {
   generateNoise: function() {
@@ -96,15 +96,6 @@ Chunk.prototype = {
   gamePosition: function() {
     return new Phaser.Point(this.x * Chunk.WIDTH, this.y * Chunk.WIDTH);
   },
-
-  x: function() {
-    return this.x;
-  },
-
-  y: function() {
-    return this.y;
-  }
-
 };
 
 Chunk.prototype.constructor = Chunk;

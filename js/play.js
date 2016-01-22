@@ -49,69 +49,38 @@ var playState = {
     hudCoords.text = '(' + Math.floor(player.currentChunk().x) + ', ' + Math.floor(player.currentChunk().y) + ')';
 
     // Update chunk map
-    expectedChunks = {
-      n: false,
-      ne: false,
-      e: false,
-      se: false,
-      s: false,
-      sw: false,
-      w: false,
-      nw: false,
-    };
-    //console.log(chunks.length);
-    //console.log(chunks);
-    chunks.forEach(function(chunk, index, array) {
-      //console.log(chunk);
-      if ((chunk.x == player.currentChunk().x - 1) && (chunk.y == player.currentChunk().y - 1)) {
-        expectedChunks.nw = true
-      }
-      if ((chunk.x == player.currentChunk().x) && (chunk.y == player.currentChunk().y - 1)) {
-        expectedChunks.n = true
-      }
-      if ((chunk.x == player.currentChunk().x + 1) && (chunk.y == player.currentChunk().y - 1)) {
-        expectedChunks.ne = true
-      }
-      if ((chunk.x == player.currentChunk().x + 1) && (chunk.y == player.currentChunk().y)) {
-        expectedChunks.e = true
-      }
-      if ((chunk.x == player.currentChunk().x + 1) && (chunk.y == player.currentChunk().y + 1)) {
-        expectedChunks.se = true
-      }
-      if ((chunk.x == player.currentChunk().x) && (chunk.y == player.currentChunk().y + 1)) {
-        expectedChunks.s = true
-      }
-      if ((chunk.x == player.currentChunk().x - 1) && (chunk.y == player.currentChunk().y + 1)) {
-        expectedChunks.sw = true
-      }
-      if ((chunk.x == player.currentChunk().x - 1) && (chunk.y == player.currentChunk().y)) {
-        expectedChunks.w = true
-      }
+    // Load in chunks all around the player
+    var eC = [
+      [-2,-2],[-1,-2],[0,-2],[ 1,-2],[ 2,-2],
+      [-2,-1],[-1,-1],[0,-1],[ 1,-1],[ 2,-1],
+      [-2, 0],[-1, 0],[0, 0],[ 1, 0],[ 2, 0],
+      [-2, 1],[-1, 1],[0, 1],[ 1, 1],[ 2, 1],
+      [-2, 2],[-1, 2],[0, 2],[ 1, 2],[ 2, 2],
+    ]
+    var neededChunks = [];
+    var loadedChunks = [];
+    chunks.forEach(function(chunk, index,array) {
+      loadedChunks.push("" + [chunk.x, chunk.y]);
     });
-    if (!expectedChunks.nw) {
-      chunks.push(new Chunk(game, player.currentChunk().x - 1, player.currentChunk().y - 1));
-    }
-    else if (!expectedChunks.n) {
-      chunks.push(new Chunk(game, player.currentChunk().x, player.currentChunk().y - 1));
-    }
-    else if (!expectedChunks.ne) {
-      chunks.push(new Chunk(game, player.currentChunk().x + 1, player.currentChunk().y - 1));
-    }
-    else if (!expectedChunks.e) {
-      chunks.push(new Chunk(game, player.currentChunk().x + 1, player.currentChunk().y));
-    }
-    else if (!expectedChunks.se) {
-      chunks.push(new Chunk(game, player.currentChunk().x + 1, player.currentChunk().y + 1));
-    }
-    else if (!expectedChunks.s) {
-      chunks.push(new Chunk(game, player.currentChunk().x, player.currentChunk().y + 1));
-    }
-    else if (!expectedChunks.sw) {
-      chunks.push(new Chunk(game, player.currentChunk().x - 1, player.currentChunk().y + 1));
-    }
-    else if (!expectedChunks.w) {
-      chunks.push(new Chunk(game, player.currentChunk().x - 1, player.currentChunk().y));
-    }
+
+    eC.forEach(function(coords, index, array) {
+      var needed = [player.currentChunk().x + coords[0], player.currentChunk().y + coords[1]]
+      neededChunks.push("" + needed);
+      if (loadedChunks.indexOf("" + needed) == -1) {
+        chunks.push(new Chunk(game, needed[0], needed[1]));
+      };
+    });
+
+    // Find a better way of removing chunks?
+    var forRemoval = -1;
+    chunks.forEach(function(chunk, index, array) {
+      if (neededChunks.indexOf("" + [chunk.x, chunk.y]) == -1) {
+        forRemoval = index;
+      };
+    });
+    if (forRemoval != -1) {
+      chunks.splice(forRemoval, 1);
+    };
   },
 
   render: function() {
