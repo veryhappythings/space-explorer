@@ -1,3 +1,5 @@
+var BreakException = {};
+
 var playState = {
   preload: function() {
     game.load.image('background', 'img/debug-grid-1920x1920.png');
@@ -23,6 +25,15 @@ var playState = {
     cursors = game.input.keyboard.createCursorKeys();
 
     game.camera.follow(player);
+
+    // Chunks to load around the player
+    expectedChunks = [];
+    var chunkDistance = 1;
+    for (var x = -chunkDistance; x <= chunkDistance; x++) {
+      for (var y = -chunkDistance; y <= chunkDistance; y++) {
+        expectedChunks.push([x, y]);
+      }
+    }
   },
 
   update: function() {
@@ -50,26 +61,26 @@ var playState = {
 
     // Update chunk map
     // Load in chunks all around the player
-    var eC = [
-      [-2,-2],[-1,-2],[0,-2],[ 1,-2],[ 2,-2],
-      [-2,-1],[-1,-1],[0,-1],[ 1,-1],[ 2,-1],
-      [-2, 0],[-1, 0],[0, 0],[ 1, 0],[ 2, 0],
-      [-2, 1],[-1, 1],[0, 1],[ 1, 1],[ 2, 1],
-      [-2, 2],[-1, 2],[0, 2],[ 1, 2],[ 2, 2],
-    ]
     var neededChunks = [];
     var loadedChunks = [];
     chunks.forEach(function(chunk, index,array) {
       loadedChunks.push("" + [chunk.x, chunk.y]);
     });
 
-    eC.forEach(function(coords, index, array) {
-      var needed = [player.currentChunk().x + coords[0], player.currentChunk().y + coords[1]]
-      neededChunks.push("" + needed);
-      if (loadedChunks.indexOf("" + needed) == -1) {
-        chunks.push(new Chunk(game, needed[0], needed[1]));
-      };
-    });
+    try {
+      expectedChunks.forEach(function(coords, index, array) {
+        var needed = [player.currentChunk().x + coords[0], player.currentChunk().y + coords[1]]
+        neededChunks.push("" + needed);
+        if (loadedChunks.indexOf("" + needed) == -1) {
+          chunks.push(new Chunk(game, needed[0], needed[1]));
+          throw BreakException;
+        };
+      });
+    } catch(e) {
+      if (e !== BreakException) {
+        throw e;
+      }
+    }
 
     // Find a better way of removing chunks?
     var forRemoval = -1;

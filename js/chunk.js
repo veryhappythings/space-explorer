@@ -16,12 +16,12 @@ Chunk = function(game, x, y) {
   );
 };
 
-Chunk.WIDTH = 500;
+Chunk.WIDTH = 1000;
 
 Chunk.prototype = {
   generateNoise: function() {
     var gridSize = 10;
-    var distance = 10;
+    var distance = 20;
     var step = Chunk.WIDTH / gridSize;
     var randomGrid = new Array();
     for (var i = 0; i < gridSize + 1; i++) {
