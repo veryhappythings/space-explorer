@@ -30,8 +30,8 @@ PerlinNoise2D.prototype.perlin = function(x, y, randomGrid) {
   // divide each co-ordinate by 500 / 50 = 10. Therefore, (150, 150) is in
   // cell (15, 15)
 
-  x = x / (textureSize / gridSize);
-  y = y / (textureSize / gridSize);
+  x = x / (this.textureSize / this.gridSize);
+  y = y / (this.textureSize / this.gridSize);
 
   // Determine grid cell coordinates
   // Convert floats into ints
@@ -60,5 +60,5 @@ PerlinNoise2D.prototype.perlin = function(x, y, randomGrid) {
   var ix1 = this.lerp(n0, n1, this.fade(sx));
 
   // lerp between both sides
-  return this.lerp(ix0, ix1, this.fade(sy));
+  return this.lerp(ix0, ix1, this.fade(sy)) * 8;
 }
