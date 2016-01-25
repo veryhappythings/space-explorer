@@ -3,6 +3,7 @@ Chunk = function(game, x, y) {
   this.x = x;
   this.y = y;
   this.rng = new Phaser.RandomDataGenerator([this.x, this.y]);
+  this.key = 'perlin_' + this.x + 'x' + this.y;
 
   // Demo sprite
   //game.add.tileSprite(x, y, Chunk.WIDTH, Chunk.WIDTH, 'background');
@@ -12,7 +13,7 @@ Chunk = function(game, x, y) {
   game.add.tileSprite(
     this.gamePosition().x, this.gamePosition().y,
     Chunk.WIDTH, Chunk.WIDTH,
-    game.cache.getBitmapData('perlin')
+    game.cache.getBitmapData(this.key)
   );
 };
 
@@ -31,8 +32,8 @@ Chunk.prototype = {
       }
     }
 
-    bmd = game.add.bitmapData(Chunk.WIDTH, Chunk.WIDTH);
-    perlin = new PerlinNoise2D(Chunk.WIDTH, randomGrid);
+    var bmd = new Phaser.BitmapData(game, this.key, Chunk.WIDTH, Chunk.WIDTH);
+    var perlin = new PerlinNoise2D(Chunk.WIDTH, randomGrid);
 
     for (var y = 0; y < Chunk.WIDTH; y+=distance) {
       for (var x = 0; x < Chunk.WIDTH; x+=distance) {
@@ -69,7 +70,7 @@ Chunk.prototype = {
     // Force image update
     bmd.context.putImageData(bmd.imageData, 0, 0);
     bmd.dirty = true;
-    game.cache.addBitmapData('perlin', bmd);
+    game.cache.addBitmapData(this.key, bmd);
   },
 
   populate: function() {
