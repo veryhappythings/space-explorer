@@ -24,7 +24,7 @@ PerlinNoise2D.prototype.fade = function(t) {
   return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-PerlinNoise2D.prototype.perlin = function(x, y, randomGrid) {
+PerlinNoise2D.prototype.perlin = function(x, y) {
   // find the grid co-ordinate that x and y are in
   // e.g. if the texture is 500px wide, and the grid is 50 cells wide,
   // divide each co-ordinate by 500 / 50 = 10. Therefore, (150, 150) is in
@@ -60,5 +60,5 @@ PerlinNoise2D.prototype.perlin = function(x, y, randomGrid) {
   var ix1 = this.lerp(n0, n1, this.fade(sx));
 
   // lerp between both sides
-  return this.lerp(ix0, ix1, this.fade(sy)) * 8;
+  return this.lerp(ix0, ix1, this.fade(sy));
 }

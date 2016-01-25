@@ -57,7 +57,7 @@ PerlinNoise2D.prototype.grad = function(hash, x, y) {
     }
 }
 
-PerlinNoise2D.prototype.perlin = function(x, y, randomGrid) {
+PerlinNoise2D.prototype.perlin = function(x, y) {
   // Find the unit cube that contains this point
   var X = Math.floor(x) & 255;
   var Y = Math.floor(y) & 255;

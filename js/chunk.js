@@ -20,8 +20,8 @@ Chunk.WIDTH = 1000;
 
 Chunk.prototype = {
   generateNoise: function() {
-    var gridSize = 10;
-    var distance = 20;
+    var gridSize = 60;
+    var distance = 50;
     var step = Chunk.WIDTH / gridSize;
     var randomGrid = new Array();
     for (var i = 0; i < gridSize + 1; i++) {
@@ -36,22 +36,24 @@ Chunk.prototype = {
 
     for (var y = 0; y < Chunk.WIDTH; y+=distance) {
       for (var x = 0; x < Chunk.WIDTH; x+=distance) {
-        var p = Math.abs(perlin.perlin(x / step, y / step, randomGrid));
+        var p = Math.abs(perlin.perlin(x / step, y / step));
 
         // Uniform noise distribution
-        //var grey = 255 * p;
+        //var grey = Phaser.Math.clamp(255 * p, 0, 255);
         //bmd.setPixel(x, y, grey, grey, grey, false);
 
         // Stars
-        if (this.rng.realInRange(0, 1) > 0.9) {
+        //if (this.rng.realInRange(0, 1) > 0.9) {
           var jitterX = this.rng.integerInRange(-distance/2, distance/2);
           var jitterY = this.rng.integerInRange(-distance/2, distance/2);
+          //var jitterX = 0;
+          //var jitterY = 0;
           var size = this.rng.integerInRange(1, 2);
           var jx = x + jitterX;
           var jy = y + jitterY;
-          var grey = 255 * p;
+          var grey = Phaser.Math.clamp(255 * p, 0, 255);
 
-          if (grey > 150) {
+          if (grey > 100) {
             for (var px = jx - (size / 2); px < jx + size; px++) {
               for (var py = jy - (size / 2); py < jy + size; py ++) {
                 bmd.setPixel(px, py, grey, grey, grey, false);
@@ -61,7 +63,7 @@ Chunk.prototype = {
           else {
             bmd.setPixel(jx, jy, grey, grey, grey, false);
           }
-        }
+        //}
       }
     }
     // Force image update
