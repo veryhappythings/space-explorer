@@ -1,6 +1,6 @@
 var BreakException = {};
 
-var playState = {
+var PlayState = {
   preload: function() {
     game.time.advancedTiming = true;
   },
