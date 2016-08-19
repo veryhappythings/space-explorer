@@ -2,10 +2,6 @@ var BreakException = {};
 
 var playState = {
   preload: function() {
-    game.load.image('background', 'img/debug-grid-1920x1920.png');
-    game.load.image('ship', 'img/ship.png');
-    game.load.image('asteroid', 'img/asteroid80.png');
-
     game.time.advancedTiming = true;
   },
 
